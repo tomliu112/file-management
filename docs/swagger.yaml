@@ -1,0 +1,91 @@
+info:
+  contact: {}
+paths:
+  /delete/{path}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除文件
+      parameters:
+      - description: file_path
+        in: path
+        name: path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: 删除文件
+      tags:
+      - accounts
+  /download:
+    get:
+      consumes:
+      - application/json
+      description: 下载文件
+      parameters:
+      - description: file_path
+        in: query
+        name: file_path
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: 下载文件
+      tags:
+      - accounts
+  /getList:
+    get:
+      consumes:
+      - application/json
+      description: 获取文件列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: getFileList
+      tags:
+      - example
+  /getPv/{period}:
+    get:
+      consumes:
+      - application/json
+      description: 根据时间按天，月，年，获取pv
+      parameters:
+      - description: day/month/year
+        in: path
+        name: period
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: 获取pv
+      tags:
+      - accounts
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件
+      parameters:
+      - description: file to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: uploadFile
+      tags:
+      - example
+swagger: "2.0"

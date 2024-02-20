@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: file-management
+  template:
+    metadata:
+      labels:
+        app: file-management
+    spec:
+      volumes:
+        - name: file-pv-storage
+          persistentVolumeClaim:
+            claimName: file-pv-claim
+      containers:
+        - name: file-management
+          image: mine:file-management
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: "/app/files"
+              name: file-pv-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-management-service
+#  labels:
+#    app: file-management
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: file-management
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: file-management-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx  # 使用 nginx 的 IngressClass（关联的 ingress-nginx 控制器）
+  rules:
+    - host: www.file-management.com  # 将域名映射到 file-management-service 服务
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:  # 将所有请求发送到 file-management-service 服务的 80 端口
+                name: file-management-service
+                port:
+                  number: 80
+# 不过需要注意大部分Ingress控制器都不是直接转发到Service
+# 而是只是通过Service来获取后端的Endpoints列表，直接转发到Pod，这样可以减少网络跳转，提高性能
